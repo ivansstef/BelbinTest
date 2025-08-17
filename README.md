@@ -1,146 +1,138 @@
-# BelbinTest
+# Тест Белбіна - Визначення командних ролей
 
-Belbin Team Roles Test - a comprehensive application for assessing team role preferences using the Belbin methodology.
+Цей проєкт реалізує психологічний тест Белбіна для визначення командних ролей користувачів з графічним інтерфейсом на Python.
 
-## Features
+## Опис
 
-- **Interactive GUI**: Easy-to-use Tkinter interface for taking the test
-- **Comprehensive Test**: Implements the official Belbin team roles assessment
-- **Data Persistence**: SQLite database to store test results
-- **Visualization**: Matplotlib pie charts to visualize results
-- **Multi-user Support**: Support for multiple users taking the test
+Тест Белбіна допомагає визначити природні ролі людини в команді. Існує 9 основних командних ролей:
 
-## Team Roles
+1. **Генератор ідей (Plant)** - творча особа з хорошою уявою
+2. **Дослідник ресурсів (Resource Investigator)** - екстраверт, досліджує можливості
+3. **Координатор (Coordinator)** - зрілий лідер, роз'яснює цілі
+4. **Формувач (Shaper)** - динамічний, працює під тиском
+5. **Аналітик (Monitor Evaluator)** - розсудливий, стратегічний мислитель
+6. **Командний гравець (Teamworker)** - кооперативний, дипломатичний
+7. **Виконавець (Implementer)** - дисциплінований, перетворює ідеї в дії
+8. **Фіналіст (Completer Finisher)** - старанний, доводить справу до кінця
+9. **Спеціаліст (Specialist)** - має рідкісні навички та знання
 
-The test identifies preferences for 9 team roles:
+## Особливості проєкту
 
-1. **Plant (Creative)** - Creative, imaginative, free-thinking
-2. **Resource Investigator** - Outgoing, enthusiastic, explores opportunities
-3. **Coordinator** - Mature, confident, clarifies goals and delegates
-4. **Shaper** - Challenging, dynamic, thrives on pressure
-5. **Monitor Evaluator** - Sober, strategic, sees all options
-6. **Teamworker** - Co-operative, mild, perceptive, diplomatic
-7. **Implementer** - Disciplined, reliable, turns ideas into actions
-8. **Completer Finisher** - Painstaking, conscientious, searches out errors
-9. **Specialist** - Single-minded, self-starting, dedicated
+- ✅ Графічний інтерфейс на Tkinter
+- ✅ База даних SQLite для збереження результатів
+- ✅ Генерація кругових діаграм з matplotlib
+- ✅ Повна українська локалізація
+- ✅ Обробка виключень
+- ✅ Юніт-тести
+- ✅ Модульна архітектура
+- ✅ OOP підхід з класами та успадкуванням
 
-## Installation
+## Структура проєкту
 
-### Prerequisites
-
-- Python 3.6 or higher
-- tkinter (usually included with Python)
-- matplotlib
-
-### Install Dependencies
-
-On Ubuntu/Debian:
-```bash
-sudo apt install python3-tk python3-matplotlib
+```
+BelbinTest/
+├── main.py                     # Головний файл запуску
+├── requirements.txt            # Залежності
+├── README.md                  # Документація
+├── .gitignore                 # Виключення для git
+├── data/                      # Дані
+│   ├── results.json          # JSON бекап результатів
+│   ├── belbin_results.db     # SQLite база даних
+│   └── charts/               # Збережені діаграми
+├── gui/                       # Графічний інтерфейс
+│   ├── __init__.py
+│   └── tkinter_interface.py  # Tkinter GUI
+├── utils/                     # Допоміжні модулі
+│   ├── __init__.py
+│   ├── belbin_test.py        # Логіка тесту
+│   ├── database.py           # Робота з БД (SQLAlchemy)
+│   └── chart_generator.py    # Генерація діаграм
+└── tests/                     # Юніт-тести
+    ├── __init__.py
+    └── test_belbin.py        # Тести
 ```
 
-On other systems:
+## Встановлення та запуск
+
+### Вимоги
+
+- Python 3.7+
+- tkinter (зазвичай входить у стандартну поставку Python)
+
+### Встановлення залежностей
+
 ```bash
-pip install matplotlib
+pip install -r requirements.txt
 ```
 
-## Usage
-
-### Running the Application
+### Запуск програми
 
 ```bash
 python main.py
 ```
 
-### Taking the Test
-
-1. Enter your name on the welcome screen
-2. Answer the test questions by distributing 10 points among the given options
-3. Navigate through questions using the Previous/Next buttons
-4. View your results with detailed scores and visualization
-
-### Test Instructions
-
-For each question:
-- Read the scenario carefully
-- Distribute exactly 10 points among the response options
-- Give more points to responses that best describe you
-- Use the navigation buttons to move between questions
-
-## Project Structure
-
-```
-BelbinTest/
-├── main.py                    # Main application entry point
-├── gui/
-│   ├── __init__.py
-│   └── tkinter_interface.py   # GUI implementation
-├── utils/
-│   ├── __init__.py
-│   └── data_processing.py     # Test logic and database operations
-├── data/
-│   └── results.db            # SQLite database (created automatically)
-├── tests/
-│   ├── __init__.py
-│   ├── test_belbin.py        # Unit tests for core functionality
-│   ├── test_gui.py           # GUI tests
-│   └── test_main.py          # Main application tests
-└── README.md
-```
-
-## Testing
-
-Run the unit tests:
+### Запуск тестів
 
 ```bash
-# Run all tests
-python -m unittest discover tests/ -v
-
-# Run specific test modules
 python -m unittest tests.test_belbin -v
-python -m unittest tests.test_gui -v
 ```
 
-For GUI testing in headless environments:
-```bash
-DISPLAY=:99 xvfb-run -a python -m unittest tests.test_gui -v
-```
+## Використання
 
-## Database Schema
+1. **Запуск програми**: Виконайте `python main.py`
+2. **Введення імені**: Введіть своє ім'я у відповідне поле
+3. **Проходження тесту**: Відповідайте на 7 питань, обираючи найбільш підходящі варіанти
+4. **Перегляд результатів**: Отримайте детальний аналіз своїх командних ролей
+5. **Діаграма**: Натисніть "Показати діаграму" для візуалізації результатів
 
-The application uses SQLite to store test results:
+## Технічні деталі
 
-```sql
-CREATE TABLE test_results (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    pl_score INTEGER DEFAULT 0,     -- Plant
-    ri_score INTEGER DEFAULT 0,     -- Resource Investigator
-    co_score INTEGER DEFAULT 0,     -- Coordinator
-    sh_score INTEGER DEFAULT 0,     -- Shaper
-    me_score INTEGER DEFAULT 0,     -- Monitor Evaluator
-    tw_score INTEGER DEFAULT 0,     -- Teamworker
-    imp_score INTEGER DEFAULT 0,    -- Implementer
-    cf_score INTEGER DEFAULT 0,     -- Completer Finisher
-    sp_score INTEGER DEFAULT 0      -- Specialist
-);
-```
+### Використані технології та концепції Python
 
-## Development
+- **Built-in Data Types**: Використання словників, списків, рядків
+- **Control Flow and Conditionals**: if/else конструкції для логіки програми
+- **Loops**: for/while цикли для обробки даних
+- **Collections**: defaultdict, списки, словники для зберігання даних
+- **Functions**: Модульні функції для різних завдань
+- **Modules and Packages**: Організація коду в пакети utils/, gui/, tests/
+- **TkInter**: Графічний інтерфейс користувача
+- **OOP**: Класи BelbinTest, BelbinTestApp, TestResult з успадкуванням від Base
+- **Exceptions**: Обробка SQLAlchemyError та загальних винятків
+- **SQLAlchemy**: ORM для роботи з базою даних
+- **File I/O**: Читання/запис JSON файлів, робота з matplotlib для збереження графіків
 
-### Architecture
+### База даних
 
-- **main.py**: Application entry point
-- **gui/tkinter_interface.py**: Complete GUI implementation with welcome screen, test questions, and results visualization
-- **utils/data_processing.py**: Core test logic, scoring algorithms, and database operations
+Програма використовує SQLite базу даних з таблицею `test_results`:
 
-### Key Classes
+- `id`: Унікальний ідентифікатор
+- `user_name`: Ім'я користувача
+- `test_date`: Дата проходження тесту
+- `results_json`: JSON з результатами тесту
+- `primary_role`: Основна командна роль
+- `secondary_role`: Додаткова командна роль
 
-- `BelbinTest`: Handles test questions, scoring logic, and role calculations
-- `DatabaseManager`: Manages SQLite database operations
-- `BelbinTestGUI`: Main GUI application class
+### Діаграми
 
-## License
+Програма генерує кругові діаграми з використанням matplotlib:
+- Візуалізація розподілу балів по ролях
+- Збереження у форматі PNG
+- Підтримка української мови
 
-This project is for educational purposes.
+## Розширення функціональності
+
+Проєкт можна розширити:
+
+- Додавання веб-інтерфейсу (Flask/Django)
+- Інтеграція з PyGame для альтернативного GUI
+- Використання pandas для аналізу статистики
+- Експорт результатів у різні формати
+- Порівняння результатів команд
+
+## Автори
+
+Проєкт створено як навчальний приклад для демонстрації різних концепцій Python програмування.
+
+## Ліцензія
+
+MIT License

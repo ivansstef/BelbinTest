@@ -1,37 +1,34 @@
 #!/usr/bin/env python3
 """
-Main entry point for the Belbin Test application.
-
-This application implements a complete Belbin Team Roles test with:
-- Tkinter GUI for user interaction
-- SQLite database for storing results
-- Matplotlib visualization of results
+Головний файл для запуску Тесту Белбіна
+Belbin Test - психологічний тест для визначення командних ролей
 """
 
 import tkinter as tk
+from tkinter import messagebox
 import sys
 import os
 
-# Add current directory to path to import modules
+# Додаємо шлях до модулів проєкту
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from gui.tkinter_interface import BelbinTestGUI
+from gui.tkinter_interface import BelbinTestApp
+from utils.database import init_database
 
 
 def main():
-    """Main function to start the Belbin Test application."""
+    """Головна функція запуску програми"""
     try:
-        # Create main window
+        # Ініціалізація бази даних
+        init_database()
+        
+        # Створення та запуск Tkinter GUI
         root = tk.Tk()
-        
-        # Create and start the application
-        app = BelbinTestGUI(root)
-        
-        # Start the main loop
+        app = BelbinTestApp(root)
         root.mainloop()
         
     except Exception as e:
-        print(f"Error starting application: {e}")
+        messagebox.showerror("Помилка", f"Сталася помилка під час запуску програми: {str(e)}")
         sys.exit(1)
 
 

@@ -1,167 +1,115 @@
 #!/usr/bin/env python3
 """
-Demo script to showcase the Belbin Test application functionality.
-This script demonstrates the core features without requiring GUI interaction.
+Демонстраційний скрипт для тестування функціональності Тесту Белбіна
+без GUI (для консольного режиму)
 """
 
 import sys
 import os
 
-# Add current directory to path
+# Додаємо шлях до модулів проєкту
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from utils.data_processing import BelbinTest, DatabaseManager
+from utils.belbin_test import BelbinTest
+from utils.database import init_database, save_test_result, get_statistics
+from utils.chart_generator import generate_pie_chart
 
 
-def demo_test_logic():
-    """Demonstrate the test logic and scoring."""
+def console_demo():
+    """Демонстрація роботи тесту в консольному режимі"""
     print("=" * 60)
-    print("BELBIN TEST DEMO - Core Functionality")
+    print("ДЕМОНСТРАЦІЯ ТЕСТУ БЕЛБІНА")
     print("=" * 60)
     
-    # Initialize test
+    # Ініціалізація
+    print("\n1. Ініціалізація компонентів...")
+    init_database()
     belbin_test = BelbinTest()
+    print("✅ База даних ініціалізована")
+    print("✅ Тест Белбіна готовий")
     
-    print(f"\n📋 Available Team Roles ({len(belbin_test.ROLES)}):")
-    for code, name in belbin_test.ROLES.items():
-        print(f"  {code}: {name}")
+    # Показ інформації про тест
+    print(f"\n2. Інформація про тест:")
+    print(f"   Кількість питань: {len(belbin_test.questions)}")
+    print(f"   Кількість ролей: {len(belbin_test.role_descriptions)}")
     
-    print(f"\n❓ Test Questions ({len(belbin_test.QUESTIONS)}):")
-    for i, question in enumerate(belbin_test.QUESTIONS):
-        print(f"\n{i+1}. {question['question']}")
-        print(f"   Options: {len(question['options'])}")
+    # Показ ролей
+    print(f"\n3. Командні ролі Белбіна:")
+    for role, info in belbin_test.role_descriptions.items():
+        print(f"   • {info['name']}")
+        print(f"     {info['description']}")
     
-    # Simulate test answers
-    sample_answers = {
-        0: {'a': 2, 'b': 1, 'c': 5, 'd': 1, 'e': 0, 'f': 0, 'g': 1, 'h': 0},  # Creative focus
-        1: {'a': 1, 'b': 3, 'c': 2, 'd': 1, 'e': 0, 'f': 2, 'g': 1, 'h': 0},  # Teamwork focus
-        2: {'a': 2, 'b': 1, 'c': 1, 'd': 4, 'e': 1, 'f': 1, 'g': 0, 'h': 0}   # Originality focus
+    # Симуляція проходження тесту
+    print(f"\n4. Симуляція проходження тесту...")
+    user_name = "Демо Користувач"
+    
+    # Приклад відповідей (перші 3 питання)
+    demo_answers = {
+        0: "plant",  # Генератор ідей
+        1: "coordinator",  # Координатор  
+        2: "shaper",  # Формувач
+        3: "plant",  # Знову генератор ідей
+        4: "monitor_evaluator",  # Аналітик
+        5: "coordinator",  # Знову координатор
+        6: "teamworker"  # Командний гравець
     }
     
-    print(f"\n🧮 Sample Test Answers:")
-    for q_idx, answers in sample_answers.items():
-        total_points = sum(answers.values())
-        print(f"  Question {q_idx + 1}: {dict(answers)} (Total: {total_points} points)")
+    print(f"   Відповіді користувача: {demo_answers}")
     
-    # Calculate scores
-    scores = belbin_test.calculate_scores(sample_answers)
+    # Розрахунок результатів
+    results = belbin_test.calculate_results(demo_answers)
+    print(f"\n5. Результати тесту:")
     
-    print(f"\n📊 Calculated Scores:")
-    for role, score in sorted(scores.items(), key=lambda x: x[1], reverse=True):
-        role_name = belbin_test.ROLES[role]
-        bar = "█" * (score // 2) if score > 0 else ""
-        print(f"  {role}: {score:2d} points {bar} ({role_name})")
+    # Показ результатів
+    sorted_results = sorted(results.items(), key=lambda x: x[1], reverse=True)
+    for role, score in sorted_results:
+        if score > 0:
+            role_name = belbin_test.role_descriptions[role]["name"]
+            print(f"   {role_name}: {score} балів")
     
-    # Get dominant roles
-    top_roles = belbin_test.get_dominant_roles(scores, 3)
-    
-    print(f"\n🏆 Top 3 Team Roles:")
-    for i, (role, score) in enumerate(top_roles):
-        role_name = belbin_test.ROLES[role]
-        print(f"  {i+1}. {role_name}: {score} points")
-
-
-def demo_database():
-    """Demonstrate database functionality."""
-    print("\n" + "=" * 60)
-    print("DATABASE DEMO - Data Persistence")
-    print("=" * 60)
-    
-    # Initialize database
-    db_manager = DatabaseManager()
-    
-    # Sample user data
-    users_data = [
-        ("Alice Johnson", {'PL': 15, 'RI': 12, 'CO': 8, 'SH': 5, 'ME': 3, 'TW': 2, 'IMP': 1, 'CF': 1, 'SP': 0}),
-        ("Bob Smith", {'SH': 14, 'CO': 11, 'IMP': 10, 'PL': 6, 'ME': 4, 'RI': 2, 'TW': 0, 'CF': 0, 'SP': 0}),
-        ("Carol Davis", {'TW': 16, 'CO': 13, 'ME': 9, 'RI': 7, 'PL': 2, 'SH': 0, 'IMP': 0, 'CF': 0, 'SP': 0})
-    ]
-    
-    print(f"\n💾 Saving {len(users_data)} sample users to database...")
-    
-    # Save sample data
-    for username, scores in users_data:
-        result_id = db_manager.save_results(username, scores)
-        print(f"  ✓ {username}: Saved with ID {result_id}")
-    
-    # Retrieve and display results
-    print(f"\n📋 Retrieved Results:")
-    all_results = db_manager.get_all_results()
-    
-    for result in all_results:
-        username = result['username']
-        timestamp = result['timestamp']
-        
-        # Get top role
-        role_scores = {
-            'PL': result['pl_score'], 'RI': result['ri_score'], 'CO': result['co_score'],
-            'SH': result['sh_score'], 'ME': result['me_score'], 'TW': result['tw_score'],
-            'IMP': result['imp_score'], 'CF': result['cf_score'], 'SP': result['sp_score']
-        }
-        
-        top_role = max(role_scores.items(), key=lambda x: x[1])
-        top_role_name = BelbinTest.ROLES[top_role[0]]
-        
-        print(f"  📊 {username} ({timestamp})")
-        print(f"     Primary Role: {top_role_name} ({top_role[1]} points)")
-
-
-def demo_visualization_data():
-    """Show sample data that would be used for visualization."""
-    print("\n" + "=" * 60)
-    print("VISUALIZATION DEMO - Chart Data")
-    print("=" * 60)
-    
-    # Sample user scores for visualization
-    sample_user = "Demo User"
-    sample_scores = {'PL': 12, 'RI': 8, 'CO': 6, 'SH': 10, 'ME': 4, 'TW': 7, 'IMP': 0, 'CF': 0, 'SP': 0}
-    
-    print(f"\n🎨 Sample Visualization Data for '{sample_user}':")
-    
-    # Filter non-zero scores for pie chart
-    filtered_scores = {role: score for role, score in sample_scores.items() if score > 0}
-    
-    total_points = sum(filtered_scores.values())
-    print(f"\n📈 Pie Chart Data (Total: {total_points} points):")
-    
-    for role, score in sorted(filtered_scores.items(), key=lambda x: x[1], reverse=True):
-        role_name = BelbinTest.ROLES[role]
-        percentage = (score / total_points) * 100
-        bar = "█" * int(percentage // 5)
-        print(f"  {role_name:<25} {score:2d} points ({percentage:5.1f}%) {bar}")
-    
-    print(f"\n📊 This data would generate a colorful pie chart showing:")
-    print(f"  - Role distribution as percentages")
-    print(f"  - Visual representation of team role preferences")
-    print(f"  - Interactive chart with save functionality")
-
-
-def main():
-    """Run the complete demo."""
-    print("🎯 BELBIN TEAM ROLES TEST - FUNCTIONALITY DEMO")
-    print("This demo showcases the core features of the application")
-    
+    # Збереження в базу даних
+    print(f"\n6. Збереження результатів...")
     try:
-        demo_test_logic()
-        demo_database()
-        demo_visualization_data()
-        
-        print("\n" + "=" * 60)
-        print("DEMO COMPLETE ✓")
-        print("=" * 60)
-        print("\n🚀 To run the full GUI application:")
-        print("   python main.py")
-        print("\n🧪 To run tests:")
-        print("   python -m unittest discover tests/ -v")
-        print("\n📖 For more information:")
-        print("   See README.md")
-        
+        save_result = save_test_result(user_name, results)
+        if save_result:
+            print("✅ Результати збережено в базу даних")
+        else:
+            print("❌ Помилка збереження результатів")
     except Exception as e:
-        print(f"\n❌ Demo failed: {e}")
-        return 1
+        print(f"❌ Помилка: {e}")
     
-    return 0
+    # Генерація діаграми
+    print(f"\n7. Генерація діаграми...")
+    try:
+        chart_path = generate_pie_chart(results, user_name)
+        print(f"✅ Діаграма збережена: {chart_path}")
+    except Exception as e:
+        print(f"❌ Помилка генерації діаграми: {e}")
+    
+    # Інтерпретація результатів
+    print(f"\n8. Інтерпретація результатів:")
+    interpretation = belbin_test.get_role_interpretation(results)
+    print(interpretation)
+    
+    # Статистика
+    print(f"\n9. Статистика:")
+    try:
+        stats = get_statistics()
+        print(f"   Всього тестів: {stats['total_tests']}")
+        print(f"   Унікальних користувачів: {stats['unique_users']}")
+        if stats['popular_roles']:
+            print("   Популярні ролі:")
+            for role, count in stats['popular_roles'][:3]:
+                role_name = belbin_test.role_descriptions.get(role, {}).get('name', role)
+                print(f"     • {role_name}: {count} раз(и)")
+    except Exception as e:
+        print(f"   Помилка отримання статистики: {e}")
+    
+    print(f"\n" + "=" * 60)
+    print("ДЕМОНСТРАЦІЯ ЗАВЕРШЕНА")
+    print("Запустіть 'python main.py' для роботи з GUI")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    console_demo()

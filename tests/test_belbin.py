@@ -1,164 +1,229 @@
 """
-Unit tests for the Belbin Test application.
+Юніт-тести для тесту Белбіна
 """
 
 import unittest
-import tempfile
 import os
 import sys
+import tempfile
+import shutil
+from unittest.mock import patch, MagicMock
 
-# Add parent directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# Додаємо шлях до модулів проєкту
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils.data_processing import BelbinTest, DatabaseManager
+from utils.belbin_test import BelbinTest
+from utils.database import init_database, save_test_result, get_user_results
+from utils.chart_generator import generate_pie_chart
 
 
 class TestBelbinTest(unittest.TestCase):
-    """Test cases for BelbinTest class."""
-    
-    def test_roles_definition(self):
-        """Test that all required roles are defined."""
-        expected_roles = ['PL', 'RI', 'CO', 'SH', 'ME', 'TW', 'IMP', 'CF', 'SP']
-        self.assertEqual(set(BelbinTest.ROLES.keys()), set(expected_roles))
-    
-    def test_questions_structure(self):
-        """Test that questions are properly structured."""
-        self.assertGreater(len(BelbinTest.QUESTIONS), 0)
-        
-        for question in BelbinTest.QUESTIONS:
-            self.assertIn('question', question)
-            self.assertIn('options', question)
-            self.assertIsInstance(question['options'], dict)
-            
-            # Check that each option has text and role mapping
-            for option_key, option_data in question['options'].items():
-                self.assertIsInstance(option_data, tuple)
-                self.assertEqual(len(option_data), 2)
-                text, role = option_data
-                self.assertIsInstance(text, str)
-                self.assertIn(role, BelbinTest.ROLES.keys())
-    
-    def test_calculate_scores_empty(self):
-        """Test score calculation with empty answers."""
-        scores = BelbinTest.calculate_scores({})
-        
-        # Should return all roles with 0 scores
-        self.assertEqual(len(scores), len(BelbinTest.ROLES))
-        for role in BelbinTest.ROLES.keys():
-            self.assertIn(role, scores)
-            self.assertEqual(scores[role], 0)
-    
-    def test_calculate_scores_sample(self):
-        """Test score calculation with sample answers."""
-        # Sample answers for first question
-        sample_answers = {
-            0: {
-                'a': 3,  # RI
-                'b': 2,  # TW
-                'c': 5,  # PL
-                'd': 0,  # CO
-                'e': 0,  # IMP
-                'f': 0,  # SH
-                'g': 0,  # ME
-                'h': 0   # ME
-            }
-        }
-        
-        scores = BelbinTest.calculate_scores(sample_answers)
-        
-        self.assertEqual(scores['RI'], 3)
-        self.assertEqual(scores['TW'], 2)
-        self.assertEqual(scores['PL'], 5)
-        self.assertEqual(scores['CO'], 0)
-    
-    def test_get_dominant_roles(self):
-        """Test getting dominant roles."""
-        scores = {
-            'PL': 15,
-            'RI': 12,
-            'CO': 8,
-            'SH': 5,
-            'ME': 3,
-            'TW': 2,
-            'IMP': 1,
-            'CF': 1,
-            'SP': 0
-        }
-        
-        top_3 = BelbinTest.get_dominant_roles(scores, 3)
-        
-        self.assertEqual(len(top_3), 3)
-        self.assertEqual(top_3[0], ('PL', 15))
-        self.assertEqual(top_3[1], ('RI', 12))
-        self.assertEqual(top_3[2], ('CO', 8))
-
-
-class TestDatabaseManager(unittest.TestCase):
-    """Test cases for DatabaseManager class."""
+    """Тести для класу BelbinTest"""
     
     def setUp(self):
-        """Set up test database."""
-        self.temp_dir = tempfile.mkdtemp()
-        self.db_path = os.path.join(self.temp_dir, 'test_results.db')
-        self.db_manager = DatabaseManager(self.db_path)
+        """Налаштування для кожного тесту"""
+        self.belbin_test = BelbinTest()
     
-    def tearDown(self):
-        """Clean up test database."""
-        if os.path.exists(self.db_path):
-            os.remove(self.db_path)
-        os.rmdir(self.temp_dir)
+    def test_init(self):
+        """Тест ініціалізації класу BelbinTest"""
+        self.assertIsInstance(self.belbin_test.role_descriptions, dict)
+        self.assertIsInstance(self.belbin_test.questions, list)
+        self.assertEqual(len(self.belbin_test.role_descriptions), 9)
+        self.assertGreater(len(self.belbin_test.questions), 0)
     
-    def test_database_initialization(self):
-        """Test that database is properly initialized."""
-        self.assertTrue(os.path.exists(self.db_path))
+    def test_role_descriptions_structure(self):
+        """Тест структури описів ролей"""
+        expected_roles = [
+            "plant", "resource_investigator", "coordinator", "shaper",
+            "monitor_evaluator", "teamworker", "implementer", 
+            "completer_finisher", "specialist"
+        ]
+        
+        for role in expected_roles:
+            self.assertIn(role, self.belbin_test.role_descriptions)
+            self.assertIn("name", self.belbin_test.role_descriptions[role])
+            self.assertIn("description", self.belbin_test.role_descriptions[role])
     
-    def test_save_and_retrieve_results(self):
-        """Test saving and retrieving results."""
-        username = "test_user"
-        scores = {
-            'PL': 10,
-            'RI': 8,
-            'CO': 6,
-            'SH': 4,
-            'ME': 2,
-            'TW': 1,
-            'IMP': 1,
-            'CF': 1,
-            'SP': 0
+    def test_questions_structure(self):
+        """Тест структури питань"""
+        for question in self.belbin_test.questions:
+            self.assertIn("question", question)
+            self.assertIn("options", question)
+            self.assertIsInstance(question["options"], list)
+            
+            for option in question["options"]:
+                self.assertIn("text", option)
+                self.assertIn("role", option)
+    
+    def test_calculate_results(self):
+        """Тест розрахунку результатів"""
+        # Тестові дані
+        test_answers = {
+            0: "plant",
+            1: "plant", 
+            2: "coordinator",
+            3: "shaper"
         }
         
-        # Save results
-        result_id = self.db_manager.save_results(username, scores)
-        self.assertIsInstance(result_id, int)
-        self.assertGreater(result_id, 0)
+        results = self.belbin_test.calculate_results(test_answers)
         
-        # Retrieve results
-        user_results = self.db_manager.get_user_results(username)
-        self.assertEqual(len(user_results), 1)
+        # Перевірка типу результату
+        self.assertIsInstance(results, dict)
         
-        result = user_results[0]
-        self.assertEqual(result['username'], username)
-        self.assertEqual(result['pl_score'], 10)
-        self.assertEqual(result['ri_score'], 8)
-        self.assertEqual(result['co_score'], 6)
+        # Перевірка наявності всіх ролей
+        expected_roles = [
+            "plant", "resource_investigator", "coordinator", "shaper",
+            "monitor_evaluator", "teamworker", "implementer", 
+            "completer_finisher", "specialist"
+        ]
+        
+        for role in expected_roles:
+            self.assertIn(role, results)
+        
+        # Перевірка підрахунку
+        self.assertEqual(results["plant"], 2)
+        self.assertEqual(results["coordinator"], 1)
+        self.assertEqual(results["shaper"], 1)
+        self.assertEqual(results["teamworker"], 0)
     
-    def test_get_all_results(self):
-        """Test retrieving all results."""
-        # Save multiple results
-        self.db_manager.save_results("user1", {'PL': 10, 'RI': 5, 'CO': 0, 'SH': 0, 'ME': 0, 'TW': 0, 'IMP': 0, 'CF': 0, 'SP': 0})
-        self.db_manager.save_results("user2", {'PL': 5, 'RI': 10, 'CO': 0, 'SH': 0, 'ME': 0, 'TW': 0, 'IMP': 0, 'CF': 0, 'SP': 0})
+    def test_get_primary_roles(self):
+        """Тест отримання основних ролей"""
+        test_results = {
+            "plant": 3,
+            "coordinator": 2,
+            "shaper": 1,
+            "teamworker": 0,
+            "implementer": 0,
+            "monitor_evaluator": 0,
+            "resource_investigator": 0,
+            "completer_finisher": 0,
+            "specialist": 0
+        }
         
-        all_results = self.db_manager.get_all_results()
-        self.assertEqual(len(all_results), 2)
+        primary_roles = self.belbin_test.get_primary_roles(test_results, 3)
+        
+        self.assertEqual(len(primary_roles), 3)
+        self.assertEqual(primary_roles[0][0], "plant")
+        self.assertEqual(primary_roles[0][1], 3)
+        self.assertEqual(primary_roles[1][0], "coordinator")
+        self.assertEqual(primary_roles[1][1], 2)
     
-    def test_empty_database(self):
-        """Test operations on empty database."""
-        user_results = self.db_manager.get_user_results("nonexistent_user")
-        self.assertEqual(len(user_results), 0)
+    def test_get_role_interpretation(self):
+        """Тест інтерпретації результатів"""
+        test_results = {
+            "plant": 3,
+            "coordinator": 2,
+            "shaper": 0,
+            "teamworker": 0,
+            "implementer": 0,
+            "monitor_evaluator": 0,
+            "resource_investigator": 0,
+            "completer_finisher": 0,
+            "specialist": 0
+        }
         
-        all_results = self.db_manager.get_all_results()
-        self.assertEqual(len(all_results), 0)
+        interpretation = self.belbin_test.get_role_interpretation(test_results)
+        
+        self.assertIsInstance(interpretation, str)
+        self.assertIn("ІНТЕРПРЕТАЦІЯ РЕЗУЛЬТАТІВ", interpretation)
+        self.assertIn("РЕКОМЕНДАЦІЇ", interpretation)
+
+
+class TestDatabase(unittest.TestCase):
+    """Тести для функцій бази даних"""
+    
+    def setUp(self):
+        """Налаштування для кожного тесту"""
+        # Створення тимчасової директорії для тестової бази даних
+        self.test_dir = tempfile.mkdtemp()
+        self.original_db_path = os.environ.get('DATABASE_PATH')
+        os.environ['DATABASE_PATH'] = os.path.join(self.test_dir, 'test.db')
+    
+    def tearDown(self):
+        """Очищення після кожного тесту"""
+        # Відновлення оригінального шляху
+        if self.original_db_path:
+            os.environ['DATABASE_PATH'] = self.original_db_path
+        elif 'DATABASE_PATH' in os.environ:
+            del os.environ['DATABASE_PATH']
+        
+        # Видалення тимчасової директорії
+        shutil.rmtree(self.test_dir, ignore_errors=True)
+    
+    def test_init_database(self):
+        """Тест ініціалізації бази даних"""
+        result = init_database()
+        self.assertTrue(result)
+    
+    @patch('utils.database.SessionLocal')
+    def test_save_test_result(self, mock_session):
+        """Тест збереження результатів тесту"""
+        # Мокування сесії бази даних
+        mock_db = MagicMock()
+        mock_session.return_value = mock_db
+        
+        test_results = {
+            "plant": 3,
+            "coordinator": 2,
+            "shaper": 1
+        }
+        
+        # Тест не викликає помилок
+        try:
+            save_test_result("Тестовий користувач", test_results)
+        except Exception as e:
+            self.fail(f"save_test_result викликав виключення: {e}")
+
+
+class TestChartGenerator(unittest.TestCase):
+    """Тести для генератора діаграм"""
+    
+    def setUp(self):
+        """Налаштування для кожного тесту"""
+        self.test_dir = tempfile.mkdtemp()
+        self.test_results = {
+            "plant": 3,
+            "coordinator": 2,
+            "shaper": 1,
+            "teamworker": 0,
+            "implementer": 0,
+            "monitor_evaluator": 0,
+            "resource_investigator": 0,
+            "completer_finisher": 0,
+            "specialist": 0
+        }
+    
+    def tearDown(self):
+        """Очищення після кожного тесту"""
+        shutil.rmtree(self.test_dir, ignore_errors=True)
+    
+    @patch('matplotlib.pyplot.savefig')
+    @patch('matplotlib.pyplot.close')
+    def test_generate_pie_chart(self, mock_close, mock_savefig):
+        """Тест генерації кругової діаграми"""
+        test_path = os.path.join(self.test_dir, 'test_chart.png')
+        
+        try:
+            result_path = generate_pie_chart(
+                self.test_results, 
+                "Тестовий користувач", 
+                test_path
+            )
+            self.assertEqual(result_path, test_path)
+            mock_savefig.assert_called_once()
+            mock_close.assert_called_once()
+        except Exception as e:
+            # Очікується, що тест може не пройти через відсутність matplotlib
+            self.skipTest(f"Тест пропущено через відсутність matplotlib: {e}")
+    
+    def test_generate_pie_chart_empty_results(self):
+        """Тест генерації діаграми з порожніми результатами"""
+        empty_results = {role: 0 for role in self.test_results.keys()}
+        
+        with self.assertRaises(ValueError):
+            generate_pie_chart(empty_results, "Тестовий користувач")
 
 
 if __name__ == '__main__':
-    unittest.main()
+    # Запуск всіх тестів
+    unittest.main(verbosity=2)

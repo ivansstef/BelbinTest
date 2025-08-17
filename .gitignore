@@ -148,3 +148,10 @@ Thumbs.db
 /tmp/
 *.tmp
 *.temp
+
+# Project specific
+data/*.db
+data/charts/*.png
+data/charts/*.jpg
+*.png
+*.jpg
