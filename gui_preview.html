@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belbin Test GUI Preview</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .window {
+            background-color: white;
+            border: 2px solid #d0d0d0;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 20px auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #555;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        .form-group label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        .form-group input {
+            padding: 8px 12px;
+            font-size: 14px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            width: 300px;
+        }
+        .button {
+            background-color: #0078d4;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background-color: #106ebe;
+        }
+        .question-container {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .question-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .option {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .option-letter {
+            font-weight: bold;
+            color: #0078d4;
+            margin-right: 10px;
+        }
+        .points-input {
+            width: 50px;
+            text-align: center;
+            margin-left: 10px;
+        }
+        .progress {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .points-counter {
+            font-weight: bold;
+            color: #0078d4;
+            margin: 15px 0;
+        }
+        .screenshot-note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="screenshot-note">
+        <strong>Note:</strong> This is a visual representation of the Belbin Test GUI application. 
+        The actual application is built with Python Tkinter and includes interactive features, 
+        database integration, and matplotlib visualization.
+    </div>
+
+    <!-- Welcome Screen -->
+    <div class="window">
+        <div class="title">Belbin Team Roles Test</div>
+        <div class="description">
+            Welcome to the Belbin Team Roles Test!<br><br>
+            This test will help you identify your preferred team roles.<br>
+            You'll be presented with several scenarios and asked to<br>
+            distribute 10 points among different response options.<br><br>
+            Please enter your name to begin:
+        </div>
+        <div class="form-group">
+            <label>Your Name:</label>
+            <input type="text" placeholder="Enter your name here" value="">
+        </div>
+        <div style="text-align: center;">
+            <button class="button">Start Test</button>
+        </div>
+    </div>
+
+    <!-- Question Screen -->
+    <div class="window">
+        <div class="progress">Question 1 of 3</div>
+        <div class="question-container">
+            <div class="question-title">What I believe I can contribute to a team:</div>
+            <div style="font-style: italic; margin-bottom: 15px; color: #666;">
+                Distribute 10 points among the options below.<br>
+                Give more points to options that best describe you.
+            </div>
+            
+            <div class="option">
+                <span class="option-letter">a)</span>
+                I think I can quickly spot and take advantage of new opportunities
+                <input type="number" class="points-input" value="2" min="0" max="10">
+            </div>
+            
+            <div class="option">
+                <span class="option-letter">b)</span>
+                I can work well with a very wide range of people
+                <input type="number" class="points-input" value="1" min="0" max="10">
+            </div>
+            
+            <div class="option">
+                <span class="option-letter">c)</span>
+                Producing ideas is one of my natural assets
+                <input type="number" class="points-input" value="5" min="0" max="10">
+            </div>
+            
+            <div class="option">
+                <span class="option-letter">d)</span>
+                My ability rests in being able to draw people out whenever I detect they have something of value to contribute
+                <input type="number" class="points-input" value="2" min="0" max="10">
+            </div>
+            
+            <div class="option">
+                <span class="option-letter">e)</span>
+                My capacity to follow through has much to do with my personal effectiveness
+                <input type="number" class="points-input" value="0" min="0" max="10">
+            </div>
+            
+            <div class="option">
+                <span class="option-letter">f)</span>
+                I am ready to face temporary unpopularity if it leads to worthwhile results in the end
+                <input type="number" class="points-input" value="0" min="0" max="10">
+            </div>
+            
+            <div class="option">
+                <span class="option-letter">g)</span>
+                I can usually sense what is realistic and likely to work
+                <input type="number" class="points-input" value="0" min="0" max="10">
+            </div>
+            
+            <div class="option">
+                <span class="option-letter">h)</span>
+                I can offer a reasoned case for alternative courses of action without introducing bias or prejudice
+                <input type="number" class="points-input" value="0" min="0" max="10">
+            </div>
+        </div>
+        
+        <div class="points-counter">Points used: 10/10</div>
+        
+        <div style="display: flex; justify-content: space-between;">
+            <button class="button">← Previous</button>
+            <button class="button">Next →</button>
+        </div>
+    </div>
+
+    <!-- Results Screen Preview -->
+    <div class="window">
+        <div class="title">Test Results for John Doe</div>
+        <div class="question-container">
+            <div class="question-title">Your Top 3 Team Roles:</div>
+            <div style="margin: 15px 0;">
+                <div style="margin: 8px 0; font-size: 14px;">1. Plant (Creative): 12 points</div>
+                <div style="margin: 8px 0; font-size: 14px;">2. Teamworker: 7 points</div>
+                <div style="margin: 8px 0; font-size: 14px;">3. Coordinator: 4 points</div>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <div class="question-title">Visualization:</div>
+                <div style="background-color: white; border: 2px solid #ddd; border-radius: 8px; padding: 20px; text-align: center;">
+                    <div style="color: #666; font-style: italic;">
+                        📊 Interactive Pie Chart would appear here<br>
+                        showing role distribution with colors and percentages<br>
+                        (Powered by matplotlib)
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="button">Take Test Again</button>
+            <button class="button" style="background-color: #dc3545;">Exit</button>
+        </div>
+    </div>
+
+    <div class="screenshot-note">
+        <strong>Features of the actual application:</strong>
+        <ul>
+            <li>✓ Interactive Tkinter GUI with proper event handling</li>
+            <li>✓ SQLite database for storing user results</li>
+            <li>✓ Matplotlib pie charts for result visualization</li>
+            <li>✓ Navigation between questions with answer validation</li>
+            <li>✓ Comprehensive Belbin test with 3 questions and 9 team roles</li>
+            <li>✓ Unit tests covering all major functionality</li>
+        </ul>
+    </div>
+</body>
+</html>
