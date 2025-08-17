@@ -1,0 +1,11 @@
+[
+  {
+    "user_name": "Тестовий користувач",
+    "test_date": "2025-08-17T20:27:17.269105",
+    "results": {
+      "plant": 3,
+      "coordinator": 2,
+      "shaper": 1
+    }
+  }
+]
