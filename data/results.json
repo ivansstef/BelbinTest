@@ -136,5 +136,29 @@
       "teamworker": 0,
       "specialist": 0
     }
+  },
+  {
+    "user_name": "Демо Користувач",
+    "test_date": "2025-08-17T21:04:02.844221",
+    "results": {
+      "plant": 2,
+      "coordinator": 2,
+      "shaper": 1,
+      "monitor_evaluator": 1,
+      "teamworker": 1,
+      "resource_investigator": 0,
+      "implementer": 0,
+      "completer_finisher": 0,
+      "specialist": 0
+    }
+  },
+  {
+    "user_name": "Тестовий користувач",
+    "test_date": "2025-08-17T21:04:50.156760",
+    "results": {
+      "plant": 3,
+      "coordinator": 2,
+      "shaper": 1
+    }
   }
 ]
