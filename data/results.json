@@ -7,5 +7,65 @@
       "coordinator": 2,
       "shaper": 1
     }
+  },
+  {
+    "user_name": "Демо Користувач",
+    "test_date": "2025-08-17T20:30:03.268353",
+    "results": {
+      "plant": 2,
+      "coordinator": 2,
+      "shaper": 1,
+      "monitor_evaluator": 1,
+      "teamworker": 1,
+      "resource_investigator": 0,
+      "implementer": 0,
+      "completer_finisher": 0,
+      "specialist": 0
+    }
+  },
+  {
+    "user_name": "Олександр Менеджер",
+    "test_date": "2025-08-17T20:31:15.064234",
+    "results": {
+      "coordinator": 4,
+      "shaper": 2,
+      "implementer": 1,
+      "plant": 0,
+      "resource_investigator": 0,
+      "monitor_evaluator": 0,
+      "teamworker": 0,
+      "completer_finisher": 0,
+      "specialist": 0
+    }
+  },
+  {
+    "user_name": "Марія Креативна",
+    "test_date": "2025-08-17T20:31:15.533149",
+    "results": {
+      "plant": 5,
+      "resource_investigator": 1,
+      "specialist": 1,
+      "coordinator": 0,
+      "shaper": 0,
+      "monitor_evaluator": 0,
+      "teamworker": 0,
+      "implementer": 0,
+      "completer_finisher": 0
+    }
+  },
+  {
+    "user_name": "Андрій Аналітик",
+    "test_date": "2025-08-17T20:31:15.982904",
+    "results": {
+      "monitor_evaluator": 4,
+      "implementer": 2,
+      "completer_finisher": 1,
+      "plant": 0,
+      "resource_investigator": 0,
+      "coordinator": 0,
+      "shaper": 0,
+      "teamworker": 0,
+      "specialist": 0
+    }
   }
 ]
